@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tom Ouderkerk · AI-Native GTM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a18;
+    --paper: #f9f8f5;
+    --mid: #6b6b65;
+    --light: #f0efe9;
+    --rule: #ddddd6;
+    --black: #111110;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 40px; }
+
+  /* NAV */
+  nav {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--rule);
+    position: sticky; top: 0;
+    background: var(--paper);
+    z-index: 100;
+    animation: fadeDown 0.5s ease both;
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+  .nav-name { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.05em; color: var(--ink); }
+  .nav-right { display: flex; align-items: center; gap: 24px; }
+  .nav-right a { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); text-decoration: none; transition: color 0.15s; }
+  .nav-right a:hover { color: var(--ink); }
+  .nav-cv { font-family: 'DM Mono', monospace; font-size: 10px !important; font-weight: 500 !important; color: var(--paper) !important; background: var(--ink); padding: 8px 16px; text-decoration: none; transition: opacity 0.15s !important; }
+  .nav-cv:hover { opacity: 0.75; }
+
+  /* HERO */
+  .hero {
+    padding: 96px 0 80px;
+    border-bottom: 1px solid var(--rule);
+    animation: fadeUp 0.7s 0.1s ease both;
+    position: relative; overflow: hidden;
+  }
+  .hero::before { content: ''; position: absolute; right: -20px; top: 40px; width: 340px; height: 340px; border: 1px solid var(--rule); border-radius: 50%; pointer-events: none; }
+  .hero::after  { content: ''; position: absolute; right: 30px; top: 90px; width: 240px; height: 240px; border: 1px solid var(--rule); border-radius: 50%; pointer-events: none; }
+
+  .hero-kicker { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); margin-bottom: 28px; display: flex; align-items: center; gap: 12px; }
+  .hero-kicker::before { content: ''; display: inline-block; width: 32px; height: 1px; background: var(--rule); }
+
+  h1 { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(52px, 8vw, 96px); font-weight: 400; line-height: 1.0; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 8px; }
+  .hero-sub { font-family: 'DM Serif Display', serif; font-size: clamp(52px, 8vw, 96px); font-weight: 400; font-style: italic; color: var(--mid); line-height: 1.0; letter-spacing: -0.02em; margin-bottom: 56px; }
+
+  .hero-body { max-width: 560px; padding-top: 40px; border-top: 1px solid var(--rule); }
+  .hero-body p { font-size: 15px; line-height: 1.85; color: #4a4a45; font-weight: 300; }
+  .hero-body p + p { margin-top: 16px; }
+
+  /* SECTION */
+  .section { border-bottom: 1px solid var(--rule); animation: fadeUp 0.6s ease both; }
+  .s1 { animation-delay: 0.2s; } .s2 { animation-delay: 0.3s; } .s3 { animation-delay: 0.4s; } .s4 { animation-delay: 0.5s; }
+
+  .sec-header { display: flex; align-items: center; gap: 20px; padding: 24px 40px; border-bottom: 1px solid var(--rule); max-width: 900px; margin: 0 auto; }
+  .sec-n { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 300; color: var(--rule); letter-spacing: 0.08em; flex-shrink: 0; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: clamp(20px, 3vw, 28px); font-weight: 400; letter-spacing: -0.01em; color: var(--ink); }
+  .sec-label { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); flex-shrink: 0; }
+
+  .sec-body { padding: 48px 0 56px; }
+  .sec-intro { font-size: 15px; line-height: 1.85; color: #555550; margin-bottom: 40px; max-width: 580px; font-weight: 300; }
+
+  /* SKILL CARDS */
+  .skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .skill { background: var(--paper); padding: 24px 22px; transition: background 0.12s; }
+  .skill:hover { background: var(--light); }
+  .skill-name { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.04em; color: var(--ink); margin-bottom: 10px; }
+  .skill-desc { font-size: 12px; line-height: 1.65; color: var(--mid); font-weight: 300; }
+
+  /* CODE BLOCK */
+  .code-block { background: var(--black); color: #e8e8e2; font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.7; overflow-x: auto; margin: 32px 0; }
+  .code-header { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-bottom: 1px solid #2a2a28; background: #161614; }
+  .code-dot { width: 10px; height: 10px; border-radius: 50%; background: #333; }
+  .code-title { font-size: 10px; color: #666; letter-spacing: 0.06em; margin-left: 4px; }
+  .code-inner { padding: 24px 28px; overflow-x: auto; }
+  .code-inner pre { white-space: pre; }
+  .c-comment { color: #555550; } .c-key { color: #a8d4b0; } .c-val { color: #d4c5a0; }
+  .c-fn { color: #8ab4d4; } .c-str { color: #c8a8d4; } .c-op { color: #888; } .c-arrow { color: #d4a8a8; }
+
+  /* DIAGRAM */
+  .diagram-wrap { margin: 32px 0; border: 1px solid var(--rule); overflow: hidden; }
+  .diagram-header { padding: 12px 20px; border-bottom: 1px solid var(--rule); background: var(--light); display: flex; align-items: center; justify-content: space-between; }
+  .diagram-title { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--mid); letter-spacing: 0.08em; }
+  .diagram-svg { width: 100%; display: block; background: var(--paper); overflow: visible; }
+
+  /* METRIC CARDS */
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 32px 0; }
+  .metric-card { background: var(--paper); padding: 20px 20px 16px; transition: background 0.12s; }
+  .metric-card:hover { background: var(--light); }
+  .metric-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 8px; }
+  .metric-value { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--ink); line-height: 1; margin-bottom: 6px; }
+  .metric-value.italic { font-style: italic; color: var(--mid); font-size: 22px; }
+  .metric-sub { font-size: 11px; color: var(--mid); line-height: 1.5; font-weight: 300; }
+
+  /* FLOW TABLE */
+  .flow-table { width: 100%; border-collapse: collapse; }
+  .flow-table tr { border-bottom: 1px solid var(--rule); }
+  .flow-table tr:last-child { border-bottom: none; }
+  .flow-table tr:hover td { background: var(--light); }
+  .flow-table td { padding: 18px 0; font-size: 13px; vertical-align: middle; transition: background 0.1s; }
+  .td-actor { width: 28%; color: var(--mid); padding-right: 20px; font-weight: 300; }
+  .td-engine { width: 40%; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 400; letter-spacing: 0.03em; color: var(--paper); background: var(--ink); padding: 10px 16px; }
+  .td-result { width: 32%; color: var(--mid); font-style: italic; padding-left: 20px; font-size: 13px; }
+
+  /* STATEMENT */
+  .statement { border-left: 3px solid var(--ink); padding: 24px 28px; margin-top: 40px; background: var(--light); }
+  .statement p { font-family: 'DM Serif Display', serif; font-size: clamp(16px, 2.2vw, 20px); line-height: 1.6; color: var(--ink); font-weight: 400; }
+
+  /* GROWTH LOOPS */
+  .loop-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 32px 0; }
+  .loop-cell { background: var(--paper); padding: 24px; transition: background 0.12s; }
+  .loop-cell:hover { background: var(--light); }
+  .loop-title { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .loop-title::before { content: ''; display: inline-block; width: 6px; height: 6px; background: var(--ink); border-radius: 50%; flex-shrink: 0; }
+  .loop-desc { font-size: 12px; line-height: 1.7; color: var(--mid); font-weight: 300; }
+  .loop-steps { margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .loop-step { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--mid); display: flex; gap: 8px; }
+  .loop-step::before { content: '→'; color: var(--rule); flex-shrink: 0; }
+
+  /* FOOTER */
+  footer { padding: 32px 0; }
+  footer .wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .footer-l { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--mid); letter-spacing: 0.04em; }
+  .footer-r { display: flex; gap: 20px; }
+  .footer-r a { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--mid); text-decoration: none; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.15s; }
+  .footer-r a:hover { color: var(--ink); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    h1, .hero-sub { font-size: 44px; }
+    .sec-header { padding: 20px; }
+    .wrap { padding: 0 20px; }
+    .nav-cv { display: none; }
+    .td-result { display: none; }
+    .td-engine { background: var(--light); color: var(--ink); }
+    .hero::before, .hero::after { display: none; }
+    .loop-row { grid-template-columns: 1fr; }
+    .metric-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap">
+    <span class="nav-name">Tom Ouderkerk</span>
+    <div class="nav-right">
+      <a href="https://linkedin.com/in/tomouderkerk" target="_blank">LinkedIn ↗</a>
+      <a href="cv.pdf" class="nav-cv">CV ↓</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-kicker">How I work</div>
+    <h1>AI-Native</h1>
+    <div class="hero-sub">GTM OS</div>
+    <div class="hero-body">
+      <p>AI reduces two costs in knowledge work: task execution and coordination. Most teams focus on the first — using AI to write faster, summarise calls, generate copy. That's useful but shallow. The bigger opportunity is coordination costs: the hidden friction that keeps revenue growth from compounding.</p>
+      <p>In most GTM organisations, that friction is structural. Outbound efforts don't reflect the latest positioning. Campaigns launch without knowing which accounts are signalling intent. Pipeline reviews happen after momentum is already lost. The system I build eliminates that friction at the source — replacing manual alignment with a shared engine that keeps the whole team pointed at the same revenue target.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── 01 CONTEXT ENGINE ── -->
+<div class="section s1">
+  <div class="sec-header">
+    <span class="sec-n">01</span>
+    <h2>Context Engine</h2>
+    <span class="sec-label">Foundation</span>
+  </div>
+  <div class="sec-body">
+    <div class="wrap">
+      <p class="sec-intro">The context engine is the fix for fragmentation. One maintained set of source files — ICP, positioning, customer stories, market signals — that every AI tool on the team draws from automatically. It updates as you learn. Smarter after every deal, every call, every campaign.</p>
+
+      <div class="diagram-wrap">
+        <div class="diagram-header">
+          <span class="diagram-title">context_engine / architecture</span>
+          <span class="diagram-title">read-only · auto-updates</span>
+        </div>
+        <svg class="diagram-svg" viewBox="0 0 820 240" xmlns="http://www.w3.org/2000/svg" font-family="'DM Mono', monospace" style="padding-bottom:0">
+          <rect x="30" y="30"  width="140" height="38" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="100" y="54"  text-anchor="middle" font-size="10" fill="#6b6b65" letter-spacing="0.04em">/icp-definition</text>
+          <rect x="30" y="82"  width="140" height="38" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="100" y="106" text-anchor="middle" font-size="10" fill="#6b6b65" letter-spacing="0.04em">/positioning</text>
+          <rect x="30" y="134" width="140" height="38" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="100" y="158" text-anchor="middle" font-size="10" fill="#6b6b65" letter-spacing="0.04em">/customer-stories</text>
+          <rect x="30" y="186" width="140" height="38" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="100" y="210" text-anchor="middle" font-size="10" fill="#6b6b65" letter-spacing="0.04em">/market-signals</text>
+          <line x1="170" y1="49"  x2="310" y2="110" stroke="#ddddd6" stroke-width="1" marker-end="url(#a1)"/>
+          <line x1="170" y1="101" x2="310" y2="110" stroke="#ddddd6" stroke-width="1" marker-end="url(#a1)"/>
+          <line x1="170" y1="153" x2="310" y2="110" stroke="#ddddd6" stroke-width="1" marker-end="url(#a1)"/>
+          <line x1="170" y1="205" x2="310" y2="112" stroke="#ddddd6" stroke-width="1" marker-end="url(#a1)"/>
+          <rect x="310" y="74" width="180" height="72" fill="#1a1a18"/>
+          <text x="400" y="104" text-anchor="middle" font-size="11" fill="#f9f8f5" letter-spacing="0.06em" font-weight="500">CONTEXT</text>
+          <text x="400" y="122" text-anchor="middle" font-size="11" fill="#f9f8f5" letter-spacing="0.06em" font-weight="500">ENGINE</text>
+          <line x1="490" y1="103" x2="620" y2="50"  stroke="#ddddd6" stroke-width="1" marker-end="url(#a1)"/>
+          <line x1="490" y1="108" x2="620" y2="102" stroke="#ddddd6" stroke-width="1" marker-end="url(#a1)"/>
+          <line x1="490" y1="113" x2="620" y2="154" stroke="#ddddd6" stroke-width="1" marker-end="url(#a1)"/>
+          <line x1="490" y1="116" x2="620" y2="202" stroke="#ddddd6" stroke-width="1" marker-end="url(#a1)"/>
+          <rect x="620" y="30"  width="160" height="38" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="700" y="54"  text-anchor="middle" font-size="10" fill="#6b6b65" letter-spacing="0.04em">Pipeline generation</text>
+          <rect x="620" y="82"  width="160" height="38" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="700" y="106" text-anchor="middle" font-size="10" fill="#6b6b65" letter-spacing="0.04em">Revenue campaigns</text>
+          <rect x="620" y="134" width="160" height="38" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="700" y="158" text-anchor="middle" font-size="10" fill="#6b6b65" letter-spacing="0.04em">PLG conversion</text>
+          <rect x="620" y="186" width="160" height="38" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="700" y="210" text-anchor="middle" font-size="10" fill="#6b6b65" letter-spacing="0.04em">Growth signals</text>
+          <defs><marker id="a1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#c0c0b8"/></marker></defs>
+        </svg>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
+          <span class="code-title">context_engine.load() — how every skill call begins</span>
+        </div>
+        <div class="code-inner"><pre><span class="c-comment"># Every skill automatically pulls from the context engine first</span>
+<span class="c-key">def</span> <span class="c-fn">run_skill</span>(skill_name, task_input):
+
+    context = <span class="c-fn">load_context</span>([
+        <span class="c-str">"/icp-definition"</span>,       <span class="c-comment"># who we're selling to</span>
+        <span class="c-str">"/positioning"</span>,           <span class="c-comment"># why we win</span>
+        <span class="c-str">"/customer-stories"</span>,      <span class="c-comment"># proof and objection handling</span>
+        <span class="c-str">"/market-signals"</span>         <span class="c-comment"># what's moving right now</span>
+    ])
+
+    <span class="c-key">return</span> <span class="c-fn">skill</span>(skill_name).run(
+        context = context,
+        input   = task_input
+    )
+
+<span class="c-comment"># Result: every output is grounded in the same source of truth</span>
+<span class="c-comment"># No manual briefing. No stale assumptions. No drift.</span></pre>
+        </div>
+      </div>
+
+      <div class="skill-grid">
+        <div class="skill"><div class="skill-name">/icp-definition</div><div class="skill-desc">Ideal customer profile — firmographics, pain signals, buying triggers. Versioned as you learn.</div></div>
+        <div class="skill"><div class="skill-name">/positioning</div><div class="skill-desc">Why you win, how you differ, what language resonates. Pulled into every output automatically.</div></div>
+        <div class="skill"><div class="skill-name">/customer-stories</div><div class="skill-desc">Win/loss transcripts, objections, competitive mentions. Updated after every deal.</div></div>
+        <div class="skill"><div class="skill-name">/market-signals</div><div class="skill-desc">Competitor moves, intent data, macro shifts. Feeds campaign and targeting decisions.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 02 SKILLS LAYER ── -->
+<div class="section s2">
+  <div class="sec-header">
+    <span class="sec-n">02</span>
+    <h2>Skills Layer</h2>
+    <span class="sec-label">Leverage</span>
+  </div>
+  <div class="sec-body">
+    <div class="wrap">
+      <p class="sec-intro">Recurring GTM work encoded as reusable AI routines. The rule: do the work first, notice what repeats, then build a skill around it. Skills emerge from real work — not blueprints. After a few weeks the team runs in seconds what used to take hours, and every output draws from the context engine rather than starting from scratch.</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
+          <span class="code-title">/morning-brief — runs at 08:00 daily</span>
+        </div>
+        <div class="code-inner"><pre><span class="c-comment">$ morning-brief --date today</span>
+
+<span class="c-fn">pulling</span> sources <span class="c-op">→</span>
+  <span class="c-str">CRM</span>         <span class="c-arrow">✓</span>  <span class="c-val">3 deals moved, 1 gone cold (Helvetia AG, 14d stall)</span>
+  <span class="c-str">Slack</span>       <span class="c-arrow">✓</span>  <span class="c-val">2 mentions of competitor pricing in #revenue</span>
+  <span class="c-str">Calendar</span>    <span class="c-arrow">✓</span>  <span class="c-val">Demo at 11:00 — Zurich Fintech, Series B</span>
+  <span class="c-str">LinkedIn</span>    <span class="c-arrow">✓</span>  <span class="c-val">ICP signal: 4 target accounts posted hiring for RevOps</span>
+
+<span class="c-key">priority actions:</span>
+  <span class="c-val">→ Re-engage Helvetia AG (use /customer-stories → banking objections)</span>
+  <span class="c-val">→ Update /market-signals with competitor pricing thread</span>
+  <span class="c-val">→ Pull 11:00 demo brief via /abm-target before call</span>
+
+<span class="c-comment">— generated in 4s · context engine v1.4</span></pre>
+        </div>
+      </div>
+
+      <!-- SKILL LIBRARY GROWTH CHART -->
+      <div class="diagram-wrap">
+        <div class="diagram-header">
+          <span class="diagram-title">skill_library / growth over time</span>
+          <span class="diagram-title">compounding leverage</span>
+        </div>
+        <svg class="diagram-svg" viewBox="0 0 820 180" xmlns="http://www.w3.org/2000/svg" font-family="'DM Mono', monospace">
+          <line x1="60" y1="20"  x2="60"  y2="130" stroke="#ddddd6" stroke-width="1"/>
+          <line x1="60" y1="130" x2="790" y2="130" stroke="#ddddd6" stroke-width="1"/>
+          <line x1="60" y1="80"  x2="790" y2="80"  stroke="#ddddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+          <line x1="60" y1="20"  x2="790" y2="20"  stroke="#ddddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+          <text x="48" y="134" text-anchor="end" font-size="9" fill="#aaa">0</text>
+          <text x="48" y="84"  text-anchor="end" font-size="9" fill="#aaa">5</text>
+          <text x="48" y="24"  text-anchor="end" font-size="9" fill="#aaa">10</text>
+          <text x="12" y="80" font-size="9" fill="#aaa" transform="rotate(-90,12,80)" text-anchor="middle">skills</text>
+          <rect x="80"  y="120" width="50" height="10"  fill="#1a1a18"/>
+          <text x="105" y="150" text-anchor="middle" font-size="9" fill="#aaa">Wk 1</text>
+          <rect x="160" y="110" width="50" height="20"  fill="#1a1a18"/>
+          <text x="185" y="150" text-anchor="middle" font-size="9" fill="#aaa">Wk 2</text>
+          <rect x="240" y="100" width="50" height="30"  fill="#1a1a18"/>
+          <text x="265" y="150" text-anchor="middle" font-size="9" fill="#aaa">Wk 3</text>
+          <rect x="320" y="80"  width="50" height="50"  fill="#1a1a18"/>
+          <text x="345" y="150" text-anchor="middle" font-size="9" fill="#aaa">Mo 1</text>
+          <rect x="400" y="60"  width="50" height="70"  fill="#1a1a18"/>
+          <text x="425" y="150" text-anchor="middle" font-size="9" fill="#aaa">Mo 2</text>
+          <rect x="480" y="40"  width="50" height="90"  fill="#1a1a18"/>
+          <text x="505" y="150" text-anchor="middle" font-size="9" fill="#aaa">Mo 3</text>
+          <rect x="560" y="20"  width="50" height="110" fill="#1a1a18" opacity="0.6"/>
+          <text x="585" y="150" text-anchor="middle" font-size="9" fill="#aaa">Mo 4</text>
+          <text x="630" y="44" font-size="9" fill="#6b6b65">full library</text>
+          <text x="630" y="56" font-size="9" fill="#6b6b65">compounds</text>
+          <line x1="623" y1="48" x2="612" y2="48" stroke="#ddddd6" stroke-width="1" marker-end="url(#a2)"/>
+          <defs><marker id="a2" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 z" fill="#c0c0b8"/></marker></defs>
+        </svg>
+      </div>
+
+      <div class="skill-grid">
+        <div class="skill"><div class="skill-name">/morning-brief</div><div class="skill-desc">Pulls CRM, Slack, calendar overnight. Situation report before 9am.</div></div>
+        <div class="skill"><div class="skill-name">/abm-target</div><div class="skill-desc">Scores accounts by ICP fit and intent signals. Ranked hit list for the week.</div></div>
+        <div class="skill"><div class="skill-name">/campaign-draft</div><div class="skill-desc">Pulls positioning and customer stories. Campaign skeleton — human edits, not rewrites.</div></div>
+        <div class="skill"><div class="skill-name">/pipeline-signal</div><div class="skill-desc">Scans CRM for cold deals and stalled stages. Weekly flag with suggested next action.</div></div>
+        <div class="skill"><div class="skill-name">/win-loss-parse</div><div class="skill-desc">Reads call transcripts, extracts objections and competitor mentions. Updates context automatically.</div></div>
+        <div class="skill"><div class="skill-name">/content-idea</div><div class="skill-desc">Cross-references SEO gaps with customer pain clusters. Prioritised content calendar output.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 03 GROWTH INTELLIGENCE ── -->
+<div class="section s3">
+  <div class="sec-header">
+    <span class="sec-n">03</span>
+    <h2>Growth Intelligence</h2>
+    <span class="sec-label">Revenue & Pipeline</span>
+  </div>
+  <div class="sec-body">
+    <div class="wrap">
+      <p class="sec-intro">The context engine doesn't just power outreach — it powers the entire growth system. Repeatable pipeline generation and revenue growth require knowing exactly where the leverage is: which cohorts convert, which channels pay back, where onboarding breaks, and what the unit economics say about where to invest next.</p>
+
+      <!-- REVENUE + PIPELINE GROWTH CHART -->
+      <div class="diagram-wrap">
+        <div class="diagram-header">
+          <span class="diagram-title">pipeline_and_revenue / growth trajectory</span>
+          <span class="diagram-title">compounding from system, not headcount</span>
+        </div>
+        <svg class="diagram-svg" viewBox="0 0 820 260" xmlns="http://www.w3.org/2000/svg" font-family="'DM Mono', monospace">
+          <!-- axes -->
+          <line x1="70" y1="20"  x2="70"  y2="200" stroke="#ddddd6" stroke-width="1"/>
+          <line x1="70" y1="200" x2="790" y2="200" stroke="#ddddd6" stroke-width="1"/>
+
+          <!-- y gridlines -->
+          <line x1="70" y1="155" x2="790" y2="155" stroke="#ddddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+          <line x1="70" y1="110" x2="790" y2="110" stroke="#ddddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+          <line x1="70" y1="65"  x2="790" y2="65"  stroke="#ddddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+          <line x1="70" y1="20"  x2="790" y2="20"  stroke="#ddddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+
+          <!-- y labels -->
+          <text x="58" y="204" text-anchor="end" font-size="9" fill="#aaa">0</text>
+          <text x="58" y="159" text-anchor="end" font-size="9" fill="#aaa">25%</text>
+          <text x="58" y="114" text-anchor="end" font-size="9" fill="#aaa">50%</text>
+          <text x="58" y="69"  text-anchor="end" font-size="9" fill="#aaa">75%</text>
+          <text x="58" y="24"  text-anchor="end" font-size="9" fill="#aaa">100%</text>
+          <text x="10" y="110" font-size="9" fill="#aaa" transform="rotate(-90,10,110)" text-anchor="middle">growth index</text>
+
+          <!-- x labels — quarters -->
+          <text x="130"  y="218" text-anchor="middle" font-size="9" fill="#aaa">Q1</text>
+          <text x="250"  y="218" text-anchor="middle" font-size="9" fill="#aaa">Q2</text>
+          <text x="370"  y="218" text-anchor="middle" font-size="9" fill="#aaa">Q3</text>
+          <text x="490"  y="218" text-anchor="middle" font-size="9" fill="#aaa">Q4</text>
+          <text x="610"  y="218" text-anchor="middle" font-size="9" fill="#aaa">Q5</text>
+          <text x="730"  y="218" text-anchor="middle" font-size="9" fill="#aaa">Q6</text>
+
+          <!-- PIPELINE area (lighter) -->
+          <polygon
+            points="70,200 130,182 250,162 370,130 490,95 610,60 730,28 790,20 790,200"
+            fill="#1a1a18" opacity="0.08"/>
+
+          <!-- PIPELINE line -->
+          <polyline
+            points="70,200 130,182 250,162 370,130 490,95 610,60 730,28"
+            fill="none" stroke="#1a1a18" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.4"/>
+
+          <!-- REVENUE area (solid) -->
+          <polygon
+            points="70,200 130,190 250,175 370,152 490,122 610,88 730,52 790,200"
+            fill="#1a1a18" opacity="0.15"/>
+
+          <!-- REVENUE line -->
+          <polyline
+            points="70,200 130,190 250,175 370,152 490,122 610,88 730,52"
+            fill="none" stroke="#1a1a18" stroke-width="2"/>
+
+          <!-- data points — revenue -->
+          <circle cx="130" cy="190" r="3" fill="#1a1a18"/>
+          <circle cx="250" cy="175" r="3" fill="#1a1a18"/>
+          <circle cx="370" cy="152" r="3" fill="#1a1a18"/>
+          <circle cx="490" cy="122" r="3" fill="#1a1a18"/>
+          <circle cx="610" cy="88"  r="3" fill="#1a1a18"/>
+          <circle cx="730" cy="52"  r="3" fill="#1a1a18"/>
+
+          <!-- data points — pipeline -->
+          <circle cx="130" cy="182" r="2.5" fill="none" stroke="#1a1a18" stroke-width="1" opacity="0.5"/>
+          <circle cx="250" cy="162" r="2.5" fill="none" stroke="#1a1a18" stroke-width="1" opacity="0.5"/>
+          <circle cx="370" cy="130" r="2.5" fill="none" stroke="#1a1a18" stroke-width="1" opacity="0.5"/>
+          <circle cx="490" cy="95"  r="2.5" fill="none" stroke="#1a1a18" stroke-width="1" opacity="0.5"/>
+          <circle cx="610" cy="60"  r="2.5" fill="none" stroke="#1a1a18" stroke-width="1" opacity="0.5"/>
+          <circle cx="730" cy="28"  r="2.5" fill="none" stroke="#1a1a18" stroke-width="1" opacity="0.5"/>
+
+          <!-- annotation: system deployed -->
+          <line x1="250" y1="40" x2="250" y2="162" stroke="#ddddd6" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="254" y="36" font-size="9" fill="#6b6b65">context engine</text>
+          <text x="254" y="48" font-size="9" fill="#6b6b65">deployed</text>
+
+          <!-- legend -->
+          <line x1="490" y1="238" x2="516" y2="238" stroke="#1a1a18" stroke-width="2"/>
+          <text x="520" y="241" font-size="9" fill="#6b6b65">ARR</text>
+          <line x1="570" y1="238" x2="596" y2="238" stroke="#1a1a18" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.4"/>
+          <text x="600" y="241" font-size="9" fill="#6b6b65">Pipeline</text>
+        </svg>
+      </div>
+
+      <!-- METRIC CARDS -->
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">CAC Payback</div>
+          <div class="metric-value">14<span style="font-size:16px;font-style:italic;color:var(--mid)">mo</span></div>
+          <div class="metric-sub">tracked per channel, updated monthly</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">CAC / LTV</div>
+          <div class="metric-value italic">1 : 4.2</div>
+          <div class="metric-sub">segmented by ICP tier and motion</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Trial → Paid</div>
+          <div class="metric-value">23<span style="font-size:16px;font-style:italic;color:var(--mid)">%</span></div>
+          <div class="metric-sub">conversion rate, cohort-tracked weekly</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">MQL → SQL</div>
+          <div class="metric-value">38<span style="font-size:16px;font-style:italic;color:var(--mid)">%</span></div>
+          <div class="metric-sub">flagged when drops below threshold</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Onboarding D7</div>
+          <div class="metric-value italic">step 3</div>
+          <div class="metric-sub">most common drop-off — triggers intervention</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">P&amp;L Contribution</div>
+          <div class="metric-value italic">GTM %</div>
+          <div class="metric-sub">spend vs ARR contribution per motion</div>
+        </div>
+      </div>
+
+      <!-- PLG SIGNAL FLOW -->
+      <div class="diagram-wrap">
+        <div class="diagram-header">
+          <span class="diagram-title">plg_loop / product-led growth signal flow</span>
+          <span class="diagram-title">usage → insight → revenue action</span>
+        </div>
+        <svg class="diagram-svg" viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" font-family="'DM Mono', monospace">
+          <rect x="20" y="90" width="130" height="40" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="85" y="106" text-anchor="middle" font-size="9" fill="#6b6b65" letter-spacing="0.03em">product usage</text>
+          <text x="85" y="120" text-anchor="middle" font-size="9" fill="#6b6b65" letter-spacing="0.03em">+ onboarding events</text>
+          <line x1="150" y1="110" x2="215" y2="110" stroke="#ddddd6" stroke-width="1" marker-end="url(#a3)"/>
+          <rect x="215" y="80" width="130" height="60" fill="#1a1a18"/>
+          <text x="280" y="106" text-anchor="middle" font-size="9" fill="#f9f8f5" letter-spacing="0.05em">/cohort-track</text>
+          <text x="280" y="120" text-anchor="middle" font-size="9" fill="#888" letter-spacing="0.04em">+ /plg-signal</text>
+          <line x1="345" y1="110" x2="410" y2="110" stroke="#ddddd6" stroke-width="1" marker-end="url(#a3)"/>
+          <rect x="410" y="80" width="130" height="60" fill="#1a1a18"/>
+          <text x="475" y="106" text-anchor="middle" font-size="10" fill="#f9f8f5" letter-spacing="0.06em">CONTEXT</text>
+          <text x="475" y="122" text-anchor="middle" font-size="10" fill="#f9f8f5" letter-spacing="0.06em">ENGINE</text>
+          <line x1="540" y1="98"  x2="620" y2="60"  stroke="#ddddd6" stroke-width="1" marker-end="url(#a3)"/>
+          <line x1="540" y1="110" x2="620" y2="110" stroke="#ddddd6" stroke-width="1" marker-end="url(#a3)"/>
+          <line x1="540" y1="122" x2="620" y2="160" stroke="#ddddd6" stroke-width="1" marker-end="url(#a3)"/>
+          <rect x="620" y="40"  width="180" height="34" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="710" y="62"  text-anchor="middle" font-size="9" fill="#6b6b65">trigger onboarding nudge</text>
+          <rect x="620" y="92"  width="180" height="34" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="710" y="114" text-anchor="middle" font-size="9" fill="#6b6b65">flag PQL → revenue motion</text>
+          <rect x="620" y="144" width="180" height="34" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="710" y="166" text-anchor="middle" font-size="9" fill="#6b6b65">update CAC/LTV model</text>
+          <path d="M 710 178 Q 710 198 475 198 Q 280 198 280 140" fill="none" stroke="#ddddd6" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#a3)"/>
+          <text x="475" y="213" text-anchor="middle" font-size="8" fill="#aaa" letter-spacing="0.04em">feedback loop</text>
+          <defs><marker id="a3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#c0c0b8"/></marker></defs>
+        </svg>
+      </div>
+
+      <!-- GROWTH BRIEF CODE -->
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
+          <span class="code-title">/growth-brief — weekly unit economics snapshot</span>
+        </div>
+        <div class="code-inner"><pre><span class="c-comment">$ growth-brief --week 2026-W16</span>
+
+<span class="c-key">unit economics:</span>
+  CAC (blended)      <span class="c-val">CHF 4,200</span>   <span class="c-arrow">↑ 8%</span>   <span class="c-comment">paid social pulling it up</span>
+  CAC (organic)      <span class="c-val">CHF 1,100</span>   <span class="c-arrow">→</span>      <span class="c-comment">stable</span>
+  LTV (ICP tier 1)   <span class="c-val">CHF 18,400</span>  <span class="c-arrow">↑ 3%</span>   <span class="c-comment">expansion revenue kicking in</span>
+  LTV/CAC ratio      <span class="c-val">4.4x</span>        <span class="c-arrow">↑</span>      <span class="c-comment">above 3x threshold ✓</span>
+  CAC payback        <span class="c-val">13.2 months</span> <span class="c-arrow">↓</span>      <span class="c-comment">improved from 14.8</span>
+
+<span class="c-key">conversion funnel:</span>
+  Visitor → Trial    <span class="c-val">6.2%</span>    <span class="c-comment">benchmark: 5–8% ✓</span>
+  Trial → PQL        <span class="c-val">31%</span>     <span class="c-comment">drop-off at step 3 onboarding (file import)</span>
+  PQL → SQL          <span class="c-val">44%</span>     <span class="c-comment">improving since ICP tightening in /icp-definition</span>
+  SQL → Closed Won   <span class="c-val">28%</span>     <span class="c-comment">↓ 4pts — investigate in /win-loss-parse</span>
+
+<span class="c-key">pipeline health:</span>
+  New pipeline (wk)  <span class="c-val">CHF 310K</span>    <span class="c-arrow">↑ 22%</span>  <span class="c-comment">ABM motion driving volume</span>
+  Weighted pipeline  <span class="c-val">CHF 1.8M</span>    <span class="c-arrow">↑ 11%</span>  <span class="c-comment">vs CHF 1.4M target</span>
+
+<span class="c-key">cohort alert:</span>
+  <span class="c-arrow">!</span> Mar cohort D30 retention <span class="c-val">61%</span> <span class="c-comment">vs 71% Feb — trigger onboarding review</span>
+  <span class="c-arrow">!</span> ABM accounts >90d no activity: <span class="c-val">7 accounts</span> <span class="c-comment">→ re-engage via /abm-target</span>
+
+<span class="c-comment">— synced to /context-engine · P&amp;L dashboard updated</span></pre>
+        </div>
+      </div>
+
+      <!-- GROWTH LOOPS -->
+      <div class="loop-row">
+        <div class="loop-cell">
+          <div class="loop-title">PLG Onboarding Loop</div>
+          <div class="loop-desc">Product usage events trigger context-aware nudges. Drop-offs at step 3 fire a personalised sequence; PQL signals go straight to the revenue motion with account context pre-loaded.</div>
+          <div class="loop-steps">
+            <div class="loop-step">user hits activation milestone</div>
+            <div class="loop-step">/plg-signal flags as PQL</div>
+            <div class="loop-step">revenue motion picks up with context</div>
+            <div class="loop-step">outreach uses /positioning + /customer-stories</div>
+          </div>
+        </div>
+        <div class="loop-cell">
+          <div class="loop-title">ABM Precision Loop</div>
+          <div class="loop-desc">Intent signals from target accounts are scored against ICP fit and buying stage. High-signal accounts get multi-touch sequences built from the context engine — not templated blasts.</div>
+          <div class="loop-steps">
+            <div class="loop-step">intent signal detected in /market-signals</div>
+            <div class="loop-step">/abm-target scores and ranks account</div>
+            <div class="loop-step">/campaign-draft builds tailored sequence</div>
+            <div class="loop-step">outcome feeds /win-loss-parse → context update</div>
+          </div>
+        </div>
+        <div class="loop-cell">
+          <div class="loop-title">Cohort Learning Loop</div>
+          <div class="loop-desc">Weekly cohort snapshots are compared against historical benchmarks. Retention drops, conversion anomalies, and expansion patterns are flagged before they compound into a pipeline problem.</div>
+          <div class="loop-steps">
+            <div class="loop-step">/cohort-track runs against CRM + product data</div>
+            <div class="loop-step">anomaly detected vs rolling benchmark</div>
+            <div class="loop-step">root cause routed to relevant team</div>
+            <div class="loop-step">/growth-brief surfaces in morning report</div>
+          </div>
+        </div>
+        <div class="loop-cell">
+          <div class="loop-title">P&amp;L Efficiency Loop</div>
+          <div class="loop-desc">CAC, LTV, and payback periods are tracked per channel and per ICP tier. Budget decisions are informed by real unit economics — not last quarter's spreadsheet guess.</div>
+          <div class="loop-steps">
+            <div class="loop-step">channel spend logged against CRM attribution</div>
+            <div class="loop-step">CAC/LTV computed per segment weekly</div>
+            <div class="loop-step">payback threshold breach → budget alert</div>
+            <div class="loop-step">reallocation recommendation in /growth-brief</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONVERSION FUNNEL -->
+      <div class="diagram-wrap">
+        <div class="diagram-header">
+          <span class="diagram-title">conversion_funnel / ABM + PLG combined</span>
+          <span class="diagram-title">illustrative · updated weekly</span>
+        </div>
+        <svg class="diagram-svg" viewBox="0 0 820 230" xmlns="http://www.w3.org/2000/svg" font-family="'DM Mono', monospace">
+          <rect x="40"  y="20"  width="740" height="30" fill="#1a1a18"/>
+          <text x="410" y="40"  text-anchor="middle" font-size="10" fill="#f9f8f5" letter-spacing="0.06em">Visitors / Target Accounts</text>
+          <text x="792" y="40"  text-anchor="end"    font-size="9"  fill="#888">100%</text>
+
+          <rect x="40"  y="66"  width="518" height="30" fill="#2e2e2c"/>
+          <text x="299" y="86"  text-anchor="middle" font-size="10" fill="#f9f8f5" letter-spacing="0.06em">Trial / ICP-matched</text>
+          <text x="568" y="86"  text-anchor="start"  font-size="9"  fill="#888">  6.2%</text>
+
+          <rect x="40"  y="112" width="255" height="30" fill="#3e3e3a"/>
+          <text x="167" y="132" text-anchor="middle" font-size="10" fill="#f9f8f5" letter-spacing="0.06em">PQL / Intent signal</text>
+          <text x="305" y="132" text-anchor="start"  font-size="9"  fill="#888">  31%</text>
+
+          <rect x="40"  y="158" width="143" height="30" fill="#555550"/>
+          <text x="111" y="178" text-anchor="middle" font-size="10" fill="#f9f8f5" letter-spacing="0.06em">SQL</text>
+          <text x="193" y="178" text-anchor="start"  font-size="9"  fill="#888">  44%</text>
+
+          <rect x="40"  y="204" width="80"  height="18" fill="#1a1a18"/>
+          <text x="132" y="218" text-anchor="start"  font-size="9"  fill="#888">  Closed Won  28%</text>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── 04 MULTIPLAYER ── -->
+<div class="section s4">
+  <div class="sec-header">
+    <span class="sec-n">04</span>
+    <h2>Multiplayer</h2>
+    <span class="sec-label">Team Unlock</span>
+  </div>
+  <div class="sec-body">
+    <div class="wrap">
+      <p class="sec-intro">This is where the coordination cost drops. Every person's AI draws from the same context engine. Information no longer needs to be manually passed between people and tools. When a deal closes or a competitor moves, the whole team's AI updates. Alignment stops being a task and becomes a property of the system.</p>
+
+      <div class="diagram-wrap">
+        <div class="diagram-header">
+          <span class="diagram-title">multiplayer / team execution flow</span>
+          <span class="diagram-title">shared context · consistent output</span>
+        </div>
+        <svg class="diagram-svg" viewBox="0 0 820 200" xmlns="http://www.w3.org/2000/svg" font-family="'DM Mono', monospace">
+          <rect x="30" y="20"  width="110" height="32" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="85" y="40"  text-anchor="middle" font-size="10" fill="#6b6b65">Outbound</text>
+          <rect x="30" y="74"  width="110" height="32" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="85" y="94"  text-anchor="middle" font-size="10" fill="#6b6b65">Revenue</text>
+          <rect x="30" y="128" width="110" height="32" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="85" y="148" text-anchor="middle" font-size="10" fill="#6b6b65">Marketing</text>
+          <line x1="140" y1="36"  x2="330" y2="88"  stroke="#ddddd6" stroke-width="1" marker-end="url(#a4)"/>
+          <line x1="140" y1="90"  x2="330" y2="90"  stroke="#ddddd6" stroke-width="1" marker-end="url(#a4)"/>
+          <line x1="140" y1="144" x2="330" y2="92"  stroke="#ddddd6" stroke-width="1" marker-end="url(#a4)"/>
+          <rect x="330" y="58" width="160" height="64" fill="#1a1a18"/>
+          <text x="410" y="86"  text-anchor="middle" font-size="10" fill="#f9f8f5" letter-spacing="0.08em">CONTEXT</text>
+          <text x="410" y="102" text-anchor="middle" font-size="10" fill="#f9f8f5" letter-spacing="0.08em">ENGINE</text>
+          <text x="410" y="116" text-anchor="middle" font-size="8"  fill="#666"    letter-spacing="0.04em">shared · versioned · live</text>
+          <line x1="490" y1="80"  x2="630" y2="36"  stroke="#ddddd6" stroke-width="1" marker-end="url(#a4)"/>
+          <line x1="490" y1="90"  x2="630" y2="90"  stroke="#ddddd6" stroke-width="1" marker-end="url(#a4)"/>
+          <line x1="490" y1="100" x2="630" y2="144" stroke="#ddddd6" stroke-width="1" marker-end="url(#a4)"/>
+          <rect x="630" y="20"  width="160" height="32" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="710" y="40"  text-anchor="middle" font-size="10" fill="#6b6b65">Pipeline generated</text>
+          <rect x="630" y="74"  width="160" height="32" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="710" y="94"  text-anchor="middle" font-size="10" fill="#6b6b65">Revenue closed</text>
+          <rect x="630" y="128" width="160" height="32" fill="#f0efe9" stroke="#ddddd6" stroke-width="1"/>
+          <text x="710" y="148" text-anchor="middle" font-size="10" fill="#6b6b65">Campaigns targeted</text>
+          <defs><marker id="a4" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#c0c0b8"/></marker></defs>
+        </svg>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
+          <span class="code-title">/win-loss-parse — the feedback loop that makes it compound</span>
+        </div>
+        <div class="code-inner"><pre><span class="c-comment">$ win-loss-parse --call "2026-04-18_helvetia_ag_lost.mp3"</span>
+
+<span class="c-fn">parsing transcript</span> <span class="c-op">→</span> <span class="c-val">47m 12s · 6,400 words</span>
+
+<span class="c-key">extracted signals:</span>
+  objections    <span class="c-op">→</span> <span class="c-val">["price vs. incumbent", "IT approval timeline"]</span>
+  competitor    <span class="c-op">→</span> <span class="c-val">Salesforce mentioned 3x, pricing anchored at -30%</span>
+  buying signal <span class="c-op">→</span> <span class="c-val">CFO asked about ROI benchmarks (never received)</span>
+
+<span class="c-key">context engine updates:</span>
+  <span class="c-arrow">↑</span> <span class="c-str">/customer-stories</span>   <span class="c-val">added: Helvetia objection pattern + miss</span>
+  <span class="c-arrow">↑</span> <span class="c-str">/market-signals</span>     <span class="c-val">updated: Salesforce pricing data, Apr 2026</span>
+  <span class="c-arrow">↑</span> <span class="c-str">/positioning</span>        <span class="c-val">flagged: ROI case study missing for FS sector</span>
+
+<span class="c-comment"># Every person's next deal is already smarter. No debrief needed.</span></pre>
+        </div>
+      </div>
+
+      <table class="flow-table" style="margin-top:32px">
+        <tr><td class="td-actor">Outbound runs a sequence</td><td class="td-engine">/icp + /positioning</td><td class="td-result">On-message, every time</td></tr>
+        <tr><td class="td-actor">Revenue preps a deal</td><td class="td-engine">/customer-stories + /pipeline-signal</td><td class="td-result">Walks in with full context</td></tr>
+        <tr><td class="td-actor">Marketing launches a campaign</td><td class="td-engine">/market-signals + /abm-target</td><td class="td-result">Hits accounts ready to buy</td></tr>
+        <tr><td class="td-actor">Product flags a PQL</td><td class="td-engine">/plg-signal + /abm-target</td><td class="td-result">Revenue picks up in context</td></tr>
+        <tr><td class="td-actor">Deal closes or doesn't</td><td class="td-engine">/win-loss-parse → context updates</td><td class="td-result">Everyone learns automatically</td></tr>
+      </table>
+
+      <div class="statement">
+        <p>Most teams have great individuals and inconsistent execution. The inconsistency is a coordination problem, not a talent problem. This system makes the whole team execute at the level of the best person — and every quarter, without adding headcount, the engine gets sharper.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span class="footer-l">Tom Ouderkerk · Lausanne, Switzerland</span>
+    <div class="footer-r">
+      <a href="https://linkedin.com/in/tomouderkerk" target="_blank">LinkedIn</a>
+      <a href="mailto:tomouderkerk@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
